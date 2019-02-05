@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import shallowequal from 'shallowequal'
 import raf from 'raf'
 import shouldUpdate from './shouldUpdate'
+import delay from 'lodash/delay';
 
 const noop = () => {}
 
@@ -22,6 +23,7 @@ export default class Headroom extends Component {
     pinStart: PropTypes.number,
     style: PropTypes.object,
     calcHeightOnResize: PropTypes.bool,
+    height: PropTypes.number,
   };
 
   static defaultProps = {
@@ -36,6 +38,7 @@ export default class Headroom extends Component {
     wrapperStyle: {},
     pinStart: 0,
     calcHeightOnResize: true,
+    height: 100,
   };
 
   constructor (props) {
@@ -49,11 +52,11 @@ export default class Headroom extends Component {
       state: 'unfixed',
       translateY: 0,
       className: 'headroom headroom--unfixed',
+      height: props.height,
     }
   }
 
   componentDidMount () {
-    this.setHeightOffset()
     if (!this.props.disable) {
       this.props.parent().addEventListener('scroll', this.handleScroll)
 
@@ -84,13 +87,6 @@ export default class Headroom extends Component {
     )
   }
 
-  componentDidUpdate (prevProps) {
-    // If children have changed, remeasure height.
-    if (prevProps.children !== this.props.children) {
-      this.setHeightOffset()
-    }
-  }
-
   componentWillUnmount () {
     this.props.parent().removeEventListener('scroll', this.handleScroll)
     window.removeEventListener('scroll', this.handleScroll)
@@ -100,10 +96,13 @@ export default class Headroom extends Component {
   setRef = ref => (this.inner = ref)
 
   setHeightOffset = () => {
-    this.setState({
-      height: this.inner.offsetHeight,
-    })
-    this.resizeTicking = false
+
+    delay(() => {
+      this.setState({
+        height: this.inner.offsetHeight,
+      })
+      this.resizeTicking = false;
+    }, 500);
   }
 
   getScrollY = () => {
@@ -112,7 +111,7 @@ export default class Headroom extends Component {
     } else if (this.props.parent().scrollTop !== undefined) {
       return this.props.parent().scrollTop
     } else {
-      return (document.documentElement || document.body.parentNode || document.body).scrollTop
+      return (document.documentElement || document.body.parentNode || document.body).scrollTop || window.pageYOffset;
     }
   }
 
@@ -172,6 +171,7 @@ export default class Headroom extends Component {
   }
 
   handleScroll = () => {
+
     if (!this.scrollTicking) {
       this.scrollTicking = true
       raf(this.update)
@@ -181,7 +181,6 @@ export default class Headroom extends Component {
   handleResize = () => {
     if (!this.resizeTicking) {
       this.resizeTicking = true
-      raf(this.setHeightOffset)
     }
   }
 
