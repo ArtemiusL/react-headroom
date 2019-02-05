@@ -24,6 +24,10 @@ var _raf = require('raf');
 
 var _raf2 = _interopRequireDefault(_raf);
 
+var _delay = require('lodash/delay');
+
+var _delay2 = _interopRequireDefault(_delay);
+
 var _shouldUpdate2 = require('./shouldUpdate');
 
 var _shouldUpdate3 = _interopRequireDefault(_shouldUpdate2);
@@ -55,10 +59,12 @@ var Headroom = function (_Component) {
     };
 
     _this.setHeightOffset = function () {
-      _this.setState({
-        height: _this.inner.offsetHeight
-      });
-      _this.resizeTicking = false;
+      (0, _delay2.default)(function () {
+        _this.setState({
+          height: _this.inner.offsetHeight
+        });
+        _this.resizeTicking = false;
+      }, 500);
     };
 
     _this.getScrollY = function () {
@@ -123,7 +129,6 @@ var Headroom = function (_Component) {
     _this.handleResize = function () {
       if (!_this.resizeTicking) {
         _this.resizeTicking = true;
-        (0, _raf2.default)(_this.setHeightOffset);
       }
     };
 
@@ -184,7 +189,8 @@ var Headroom = function (_Component) {
     _this.state = {
       state: 'unfixed',
       translateY: 0,
-      className: 'headroom headroom--unfixed'
+      className: 'headroom headroom--unfixed',
+      height: props.height
     };
     return _this;
   }
@@ -192,7 +198,6 @@ var Headroom = function (_Component) {
   _createClass(Headroom, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.setHeightOffset();
       if (!this.props.disable) {
         this.props.parent().addEventListener('scroll', this.handleScroll);
 
@@ -220,14 +225,6 @@ var Headroom = function (_Component) {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
       return !(0, _shallowequal2.default)(this.props, nextProps) || !(0, _shallowequal2.default)(this.state, nextState);
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps) {
-      // If children have changed, remeasure height.
-      if (prevProps.children !== this.props.children) {
-        this.setHeightOffset();
-      }
     }
   }, {
     key: 'componentWillUnmount',
@@ -327,7 +324,8 @@ Headroom.propTypes = {
   wrapperStyle: _propTypes2.default.object,
   pinStart: _propTypes2.default.number,
   style: _propTypes2.default.object,
-  calcHeightOnResize: _propTypes2.default.bool
+  calcHeightOnResize: _propTypes2.default.bool,
+  height: _propTypes2.default.number
 };
 Headroom.defaultProps = {
   parent: function parent() {
@@ -342,6 +340,7 @@ Headroom.defaultProps = {
   onUnfix: noop,
   wrapperStyle: {},
   pinStart: 0,
-  calcHeightOnResize: true
+  calcHeightOnResize: true,
+  height: 100
 };
 exports.default = Headroom;

@@ -2,8 +2,9 @@ import React, { Component } from 'react' // eslint-disable-line import/no-unreso
 import PropTypes from 'prop-types'
 import shallowequal from 'shallowequal'
 import raf from 'raf'
+import delay from 'lodash/delay'
+
 import shouldUpdate from './shouldUpdate'
-import delay from 'lodash/delay';
 
 const noop = () => {}
 
@@ -96,13 +97,12 @@ export default class Headroom extends Component {
   setRef = ref => (this.inner = ref)
 
   setHeightOffset = () => {
-
     delay(() => {
       this.setState({
         height: this.inner.offsetHeight,
       })
-      this.resizeTicking = false;
-    }, 500);
+      this.resizeTicking = false
+    }, 500)
   }
 
   getScrollY = () => {
@@ -111,7 +111,7 @@ export default class Headroom extends Component {
     } else if (this.props.parent().scrollTop !== undefined) {
       return this.props.parent().scrollTop
     } else {
-      return (document.documentElement || document.body.parentNode || document.body).scrollTop || window.pageYOffset;
+      return (document.documentElement || document.body.parentNode || document.body).scrollTop
     }
   }
 
@@ -171,7 +171,6 @@ export default class Headroom extends Component {
   }
 
   handleScroll = () => {
-
     if (!this.scrollTicking) {
       this.scrollTicking = true
       raf(this.update)
