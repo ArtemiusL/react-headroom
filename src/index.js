@@ -256,14 +256,11 @@ export default class Headroom extends Component {
     const { style, wrapperStyle, ...rest } = divProps
 
     let innerStyle = {
-      position: this.props.disable || this.state.state === 'unfixed' ? 'relative' : 'fixed',
+      position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       zIndex: 1,
-      WebkitTransform: `translate3D(0, ${this.state.translateY}, 0)`,
-      MsTransform: `translate3D(0, ${this.state.translateY}, 0)`,
-      transform: `translate3D(0, ${this.state.translateY}, 0)`,
     }
 
     let className = this.state.className
